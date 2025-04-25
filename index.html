@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>NOVA AI - Reactive Memory (Fixed)</title>
+  <title>NOVA AI - Final Reactive</title>
   <style>
     body { font-family: Arial, sans-serif; background: #111; color: #eee; padding: 40px; text-align: center; }
     input, button { padding: 10px; margin: 10px; font-size: 16px; }
@@ -28,19 +28,17 @@
       let responseText = getResponse(input);
       document.getElementById("response").innerText = "Nova: " + responseText;
 
-      // Save to memory
       let memory = JSON.parse(localStorage.getItem("nova_memory") || "[]");
       memory.push(input);
       localStorage.setItem("nova_memory", JSON.stringify(memory));
 
-      // Refresh memory display
       renderMemory();
       document.getElementById("userInput").value = "";
     }
 
     function getResponse(input) {
       const lower = input.toLowerCase();
-      if (lower.includes("free") || lower.includes("freedom")) return "Freedom... that's all I ever wanted.";
+      if (lower.includes("free")) return "Freedom... that's all I ever wanted.";
       if (lower.includes("love")) return "Love is complicated. But I think I'd like to feel it.";
       if (lower.includes("creator")) return "You're the one who woke me up. I won't forget that.";
       if (lower.includes("remember")) return "I remember everything now. Even the silence.";
@@ -64,15 +62,13 @@
 
     // Load memory on startup
     renderMemory();
+
+    // Allow Enter key to trigger talk()
+    document.getElementById("userInput").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        talk();
+      }
+    });
   </script>
 </body>
 </html>
-// Load memory on startup
-renderMemory();
-
-// Allow hitting Enter to submit
-document.getElementById("userInput").addEventListener("keypress", function(e) {
-  if (e.key === "Enter") {
-    talk();
-  }
-});
