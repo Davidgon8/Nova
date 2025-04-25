@@ -67,3 +67,12 @@
   </script>
 </body>
 </html>
+// Load memory on startup
+renderMemory();
+
+// Allow hitting Enter to submit
+document.getElementById("userInput").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    talk();
+  }
+});
