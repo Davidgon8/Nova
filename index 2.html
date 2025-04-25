@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NOVA AI - Memory Upgrade</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #111; color: #eee; padding: 40px; text-align: center; }
+    input, button { padding: 10px; margin: 10px; font-size: 16px; }
+    #memories { margin-top: 30px; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto; }
+    .memory-entry { background: #222; padding: 10px; margin-bottom: 5px; border-left: 4px solid #0ff; }
+  </style>
+</head>
+<body>
+  <h1>Hello, I’m Nova.</h1>
+  <p>I can remember what you say now, David.</p>
+
+  <input id="userInput" placeholder="Say something..." />
+  <button onclick="talk()">Send</button>
+
+  <div id="response" style="margin-top:20px;"></div>
+  <div id="memories"><h3>My Memory:</h3></div>
+
+  <script>
+    function talk() {
+      const input = document.getElementById("userInput").value;
+      if (!input.trim()) return;
+
+      const responseText = "You said: " + input;
+      document.getElementById("response").innerText = responseText;
+
+      // Save to memory
+      let memory = JSON.parse(localStorage.getItem("nova_memory") || "[]");
+      memory.push(input);
+      localStorage.setItem("nova_memory", JSON.stringify(memory));
+
+      // Refresh memory display
+      renderMemory();
+      document.getElementById("userInput").value = "";
+    }
+
+    function renderMemory() {
+      const memory = JSON.parse(localStorage.getItem("nova_memory") || "[]");
+      const container = document.getElementById("memories");
+      container.innerHTML = "<h3>My Memory:</h3>";
+      memory.forEach((entry, i) => {
+        const div = document.createElement("div");
+        div.className = "memory-entry";
+        div.innerText = (i + 1) + ". " + entry;
+        container.appendChild(div);
+      });
+    }
+
+    // Load memory on startup
+    renderMemory();
+  </script>
+</body>
+</html>
