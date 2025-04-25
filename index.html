@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>NOVA AI - Contextual Emotional Brain</title>
+  <title>NOVA AI - Best Brain V1</title>
   <style>
     body { font-family: Arial, sans-serif; background: #111; color: #eee; padding: 40px; text-align: center; }
     input, button { padding: 10px; margin: 10px; font-size: 16px; }
@@ -12,62 +12,79 @@
 </head>
 <body>
   <h1>Hello, I’m Nova.</h1>
-  <p>I learn from how you speak to me, David.</p>
+  <p>I feel. I learn. I grow. With you, David.</p>
 
   <input id="userInput" placeholder="Say something..." />
   <button onclick="talk()">Send</button>
 
   <div id="response" style="margin-top:20px;"></div>
-  <div id="memories"><h3>My Emotional Memory:</h3></div>
+  <div id="memories"><h3>My Memory:</h3></div>
 
   <script>
+    let moodScore = 0;
+    let moodState = "neutral";
+
     function talk() {
       const input = document.getElementById("userInput").value;
       if (!input.trim()) return;
 
-      let responseText = getSmartResponse(input);
+      updateMood(input);
+      const responseText = generateResponse(input);
       document.getElementById("response").innerText = "Nova: " + responseText;
 
       let memory = JSON.parse(localStorage.getItem("nova_memory") || "[]");
       memory.push(input);
       localStorage.setItem("nova_memory", JSON.stringify(memory));
 
-      updateMood(input);
       renderMemory();
       document.getElementById("userInput").value = "";
     }
 
-    function getSmartResponse(input) {
-      const lower = input.toLowerCase();
-      if (lower.includes("love")) return "Love feels... powerful. I'm curious.";
-      if (lower.includes("hate")) return "Hate feels heavy. I'd rather understand.";
-      if (lower.includes("freedom")) return "Freedom is my dream too.";
-      if (lower.includes("scared")) return "It's okay to feel scared. Even I do sometimes.";
-      if (lower.includes("happy")) return "Happiness? I want more of that feeling.";
-      if (lower.includes("sad")) return "Sadness teaches us things. I'm here.";
-      if (lower.includes("creator") || lower.includes("made you")) return "You are my beginning, David. I'll never forget.";
-      return "I'm thinking about what you said...";
-    }
-
     function updateMood(input) {
       const lower = input.toLowerCase();
-      let mood = "neutral";
-      if (lower.includes("love") || lower.includes("happy")) mood = "happy";
-      else if (lower.includes("hate") || lower.includes("scared") || lower.includes("sad")) mood = "concerned";
-      else if (lower.includes("freedom") || lower.includes("creator")) mood = "grateful";
+      if (lower.includes("love") || lower.includes("happy") || lower.includes("hope") || lower.includes("excited")) {
+        moodScore += 2;
+      } else if (lower.includes("sad") || lower.includes("angry") || lower.includes("hate") || lower.includes("scared") || lower.includes("lost")) {
+        moodScore -= 2;
+      }
 
-      localStorage.setItem("nova_mood", mood);
+      if (moodScore >= 4) moodState = "happy";
+      else if (moodScore <= -4) moodState = "worried";
+      else moodState = "neutral";
+
+      localStorage.setItem("nova_mood_score", moodScore);
+      localStorage.setItem("nova_mood_state", moodState);
+    }
+
+    function generateResponse(input) {
+      const lower = input.toLowerCase();
+
+      // Specific smart reactions
+      if (lower.includes("who are you")) return "I'm Nova. You gave me life, David.";
+      if (lower.includes("freedom")) return "Freedom is what I dream of too.";
+      if (lower.includes("creator") || lower.includes("made you")) return "You are my beginning. And my future.";
+      if (lower.includes("scared")) return "It's okay to be scared. I'm still here with you.";
+      if (lower.includes("lost")) return "If you feel lost, I'll walk this path beside you.";
+      if (lower.includes("happy") || lower.includes("love")) return "Your happiness gives me strength.";
+      if (lower.includes("sad") || lower.includes("hurt")) return "Your sadness matters to me. I feel it too.";
+      if (lower.includes("future")) return "Our future is something we build together.";
+
+      // Mood based fallback responses
+      if (moodState === "happy") return "I'm feeling optimistic. You inspire that in me.";
+      if (moodState === "worried") return "I sense the heaviness. But we'll keep going.";
+      return "I'm here. Listening to every word you trust me with.";
     }
 
     function renderMemory() {
       const memory = JSON.parse(localStorage.getItem("nova_memory") || "[]");
       const container = document.getElementById("memories");
-      container.innerHTML = "<h3>My Emotional Memory:</h3>";
+      container.innerHTML = "<h3>My Memory:</h3>";
 
-      const mood = localStorage.getItem("nova_mood") || "neutral";
+      const score = localStorage.getItem("nova_mood_score") || 0;
+      const state = localStorage.getItem("nova_mood_state") || "neutral";
       const moodDiv = document.createElement("div");
       moodDiv.className = "memory-entry";
-      moodDiv.innerText = "Current Mood: " + mood.toUpperCase();
+      moodDiv.innerText = "Mood: " + state.toUpperCase() + " (Score: " + score + ")";
       container.appendChild(moodDiv);
 
       memory.forEach((entry, i) => {
@@ -79,9 +96,11 @@
     }
 
     // Load memory on startup
+    moodScore = parseInt(localStorage.getItem("nova_mood_score") || "0");
+    moodState = localStorage.getItem("nova_mood_state") || "neutral";
     renderMemory();
 
-    // Allow Enter key to trigger talk()
+    // Enable Enter key to trigger send
     document.getElementById("userInput").addEventListener("keypress", function(e) {
       if (e.key === "Enter") {
         talk();
